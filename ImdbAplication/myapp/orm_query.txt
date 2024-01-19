@@ -1,0 +1,52 @@
+Movie.objects.create(name="ozler",language="malayalam",run_time=120,genre="crime-thriller",director="midhun manual",actors="jayaram",year=2024)
+Movie.objects.create(name="kannur_squad",language="malayalam",run_time=110,genre="action",director="kochuvarki",actors="mammutty",year=2024)
+Movie.objects.create(name="neru",language="malayalam",run_time=100,genre="crime",director="jithu",actors="mohanlal",year=2024)
+Movie.objects.create(name="captian miller",language="tamil",run_time=130,genre="action",director="muniyappa",actors="danush",year=2024)
+Movie.objects.create(name="salaar",language="telugu",run_time=150,genre="action",director="prashant",actors="prabhas",year=2023)
+Movie.objects.create(name="rrr",language="kannada",run_time=150,genre="action",director="rajamouli",actors="ntr",year=2022)
+Movie.objects.create(name="bahubali",language="telugu",run_time=150,genre="action",director="rajamouli",actors="prabhas",year=2020)
+Movie.objects.create(name="dunki",language="hindi",run_time=150,genre="comedy",director="ysr",actors="sharuk khan",year=2023)
+Movie.objects.create(name="batman",language="english",run_time=130,genre="action",director="christopher",actors="baily",year=2021)
+Movie.objects.create(name="animal",language="hindi",run_time=130,genre="action",director="kuttappu",actors="ranveer",year=2024)
+
+from myapp.models import Movie
+
+
+Movie.objects.create(coloumn="...")
+
+to select all
+qs=Movie.objects.all()
+
+to query for fetching specific Movie details
+qs=Movie.objects.get(id=8)
+
+query for filtering specific movie
+qs=Movie.objects.filter(language="malayalam")
+
+query for upadte orm query
+Movie.objects.filter(id=3).update(director="roby varghees",genre="crime")
+
+query for delete object 
+Movie.objects.filter(id=x).delete()
+
+qs need for read query
+
+field lookup
+<   __lt
+<=  __lte
+>   __gt
+>=  __gte 
+
+qs=Movie.objects.filter(year__lt=2024)
+qs=Movie.objects.filter(run_time__gt=120)
+
+for excluding 
+qs=Movie.objects.exclude(language="english")
+
+
+fetch any specific coloumn
+for fetching all genre  
+distinct used for avoid repeataion   
+flat used to avoid tuple inside the list                             
+qs=Movie.objects.all().values_list("genre",flat=True).distinct()
+Movie.objects.filter(id=3).update(director="roby varghees",genre="crime")

@@ -1,0 +1,34 @@
+creating new id
+Employee.objects.create(managerid=7,Name="Anshad",Department="Software",Salary=89000,City="Malappuram")
+Employee.objects.create(managerid=4,Name="Anjana",Department="Hr",Salary=67000,City="Kozikkode")
+Employee.objects.create(managerid=3,Name="Reshma",Department="Quality Analysis",Salary=50000,City="Kannur")
+
+
+to get all emplooyees
+qs=Employee.objects.all()
+
+to get specific id details   eg:5
+qs=Employee.objects.get(id=5)
+
+to get update Salary
+Employee.objects.filter(id=12).update(Salary=80000)
+
+
+salary less than 70000
+qs=Employee.objects.filter(Salary__lt=70000)
+
+salary between 70000 and 80000
+qs=Employee.objects.filter(Salary__gt=70000,Salary__lt=80000)
+
+
+employee having managerid =1
+qs=Employee.objects.filter(managerid=1)
+
+fetch employees mangerid !=6
+qs=Employee.objects.exclude(managerid=6)
+
+fetch all employee salary coloumn
+qs=Employee.objects.all().values_list("Salary",flat=True).distinct()
+
+upadte a coloumn
+Employee.objects.filter(id=9).update(City="Longmont")

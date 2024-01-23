@@ -13,7 +13,11 @@
   </head>
   <body>
     <div class="container mt-3">
-      <div class="row">
+      <div class="row ms-5">
+        <a href="{%url 'movie-add' %}" >Add Movie</a>
+
+      </div>
+      <div class="row"> 
         <div class="col-1"></div>
         <div class="col-10 p-3 borer border-3 shadow ">
           <table class="table bg-dark">
@@ -22,6 +26,7 @@
               <th>Language</th>
               <th>Genre</th>
               <th>Year</th>
+              <th>Action</th>
             </tr>
             {%for m in data%}
             <tr>
@@ -29,6 +34,11 @@
                 <td>{{m.language}}</td>
                 <td>{{m.genre}}</td>
                 <td>{{m.year}}</td>
+                <td>
+                  <a href="{%url 'movie-details' m.id%}" class="btn btn-outline-info">View</a>
+                  <a href="{%url 'movie-delete' m.id%}" class="btn btn-outline-danger">Remove</a>
+                  <a href="{%url 'movie-edit' m.id%}" class="btn btn-outline-warning">Chanage</a>
+                </td>
             </tr>
             {%endfor%}
           </table>

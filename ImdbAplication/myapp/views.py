@@ -43,10 +43,43 @@ class MovieCreateView(View):
      return render(request,"movie_create.html",{"form":form})
     
     def post(self,request,*args,**kwargs):
-        data={k:v for k,v in request.POST.items()}
+        form=MovieForm(request.POST)
+        if form.is_valid():
+          data=form.cleaned_data
+          Movie.objects.create(**data)
+          return redirect("movie-list")
+        else:
+          return render(request,"movie_create.html",{"form":form})
+        
 
-        data.pop("csrfmiddlewaretoken")
 
-        Movie.objects.create(**data)
-        return redirect("movie-list")
+# to update
+    # localhost:8000/movies/{id}/change   
+class MovieUpdateView(View):
+   def get(self,request,*args,**kwargs):
+      form=MovieForm()
 
+      id=kwargs.get("pk")
+      movie_object=Movie.objects.get(id=id)
+      data={
+         "name":movie_object.name,
+         "language":movie_object.language,
+         "run_time":movie_object.run_time,
+         "genre":movie_object.genre,
+         "director":movie_object.director,
+         "year":movie_object.year,
+         "actors":movie_object.actors
+      }
+      form=MovieForm(initial=data)
+      return render(request,"movie_edit.html",{"form":form})
+   
+   def post(self,request,*args,**kwargs):
+      form=MovieForm(request.POST)
+      if form.is_valid():
+         data=form.cleaned_data
+         id=kwargs.get("pk")
+         Movie.objects.filter(id=id).update(**data)
+         return redirect("movie-list")
+      else:
+         return render(request,"movie_edit.html",{"form":form})
+   

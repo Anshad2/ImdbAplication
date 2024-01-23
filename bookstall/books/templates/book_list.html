@@ -8,10 +8,16 @@
 </head>
 <body>
     <div class="container">
+        
+        <h1 class="d-flex justify-content-centre">BookSTall</h1>
         <div class="row">
             <div class="col-1"></div>
             <div class="col10 p-3 border border-3 shadow">
                 <table class="table bg-dark">
+                    <div class="row ms-5">
+                        <a href="{%url 'book-add' %}" >Add Book</a>
+                
+                      </div>
                     <tr>
                         <th>Name</th>
                         <th>Author</th>
@@ -21,6 +27,7 @@
                         <th>Prize</th>
                         <th>Rating</th>
                         <th>Pages</th>
+                        <th>Action</th>
                     </tr>
                     {%for b in data%}
                     <tr>
@@ -32,7 +39,16 @@
                         <td>{{b.prize}}</td>
                         <td>{{b.rating}}</td>
                         <td>{{b.pages}}</td>
+                        <td>
+                            <a href="{%url 'book-details' b.id%}" class="btn btn-outline-info">View</a>
+                            <a href="{%url 'book-delete' b.id%}" class="btn btn-outline-danger">Remove</a>
+                    
+                            <a href="{url}" class="btn btn-outline-primary">Chanage</a>
+                        </td>
                     </tr>
+                    
+                        
+                        
                     {%endfor%}
                 </table>
             </div>

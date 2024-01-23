@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('books/all',views.BookListView.as_view(),name="book-list"),
     path('books/<int:pk>/',views.BookDetailsView.as_view(),name="book-details"),
-    path('books/<int:pk>/remove/',views.BookDeleteView.as_view(),name="movie-delete")
+    path('books/<int:pk>/remove/',views.BookDeleteView.as_view(),name="book-delete"),
+    path("books/add/",views.BookCreateView.as_view(),name="book-add"),
 ]
 

@@ -1,5 +1,5 @@
 """
-URL configuration for bookstall project.
+URL configuration for balance_of_payment project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
@@ -16,15 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from books import views
-# localhosts:8000/books/all/
+from revenue import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('books/all',views.BookListView.as_view(),name="book-list"),
-    path('books/<int:pk>/',views.BookDetailsView.as_view(),name="book-details"),
-    path('books/<int:pk>/remove/',views.BookDeleteView.as_view(),name="book-delete"),
-    path("books/add/",views.BookCreateView.as_view(),name="book-add"),
-    path("books/<int:pk>/change/",views.BookUpdateView.as_view(),name="book-edit"),
+    path("transactions/all/",views.TransactionListView.as_view(),name="transaction-list"),
+    path("transactions/add/",views.TransactionCreateView.as_view(),name="transaction-add"),
+    path("transactions/<int:pk>/",views.TransactionDetailView.as_view(),name="transaction-detail"),
+    path("transactions/<int:pk>/remove/",views.TransactionDeleteView.as_view(),name="transaction-delete"),
+    path("transactions/<int:pk>/change/",views.TransactionEditView.as_view(),name="transaction-edit"),
+    path("signup/",views.SignUpView.as_view(),name="signup"),
+    path("signin/",views.SignInView.as_view(),name="signin"),
+    
 ]
-

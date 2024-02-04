@@ -57,3 +57,34 @@ class BookCreateView(View):
            return render(request,"book_create.html",{"form":form})
 
 
+class BookUpdateView(View):
+    def get(self,request,*args,**kwargs):
+        form=BookForm()
+        id=kwargs.get("pk")
+        book_object=Book.objects.get(id=id)
+        data={
+            "name": book_object.name,
+            "author": book_object.author,
+            "language": book_object.language,
+            "genre": book_object.genre,
+            "published_year": book_object.published_year,
+            "prize": book_object.prize,
+            "rating": book_object.rating,
+            "pages": book_object.pages
+        }
+
+        form=BookForm(initial=data)
+        return render(request,"book_edit.html",{"form":form})
+    
+    def post(self,request,*args,**kwargs):
+        form=BookForm(request.POST)
+        if form.is_valid():
+            data=form.cleaned_data
+            id=kwargs.get("pk")
+            Book.objects.filter(id=id).update(**data)
+            return redirect("book-list")
+        else:
+            return render(request,"book_edit.html",{"form":form})
+
+
+    

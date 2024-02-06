@@ -8,7 +8,7 @@ from django import forms
 
 from django.contrib.auth.models import User
 
-from django.contrib.auth import authenticate,login
+from django.contrib.auth import authenticate,login,logout
 
 # Create your views here.
 
@@ -74,9 +74,7 @@ class TransactionDetailView(View):
     def get(self,request,*args,**kwargs):
         id=kwargs.get("pk")
         qs=Transaction.objects.get(id=id)
-        return render(request,"transaction_detail.html",{"data":qs})
-    
-        
+        return render(request,"transaction_detail.html",{"data":qs}) 
 
 ##trasaction delete view
 ##url: localhost:8000/transactions/{id}/remove
@@ -146,9 +144,19 @@ class SignInView(View):
             if user_object:
                 print("valid")
                 login(request,user_object)
+                # request.user => anonymus user(user has no session)
                 return redirect("transaction-list")
         print("invalid")
         return render(request,"login.html",{"form":form})
+
+
+# signout
+    
+class SignOutView(View):
+    def get(self,request,*args,**kwargs):
+        logout(request)
+        return redirect("signin")
+
 
 
 

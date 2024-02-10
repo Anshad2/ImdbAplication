@@ -19,6 +19,8 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model=Task
         fields="__all__"
+        exclude=("user",)
+
 
 
 # registartion form
@@ -40,7 +42,7 @@ class LoginForm(forms.Form):
 
 class TaskListView(View):
     def get(self,request,*args,**kwargs):
-        qs=Task.objects.all()
+        qs=Task.objects.filter(user=request.user)
         return render(request,"task_list.html",{"data":qs})
     
 class TaskCreateView(View):
@@ -50,7 +52,10 @@ class TaskCreateView(View):
     def post(self,request,*args,**kwargs):
         form=TaskForm(request.POST)
         if form.is_valid():
-            form.save()
+            # form.save()
+            data=form.cleaned_data
+            Task.objects.create(**data,user=request.user)
+
             return redirect("task-list")
         else:
             return render(request,"task_add.html",{"form":form})

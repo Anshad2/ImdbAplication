@@ -1,5 +1,5 @@
 """
-URL configuration for todoapp project.
+URL configuration for lets_blog project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
@@ -16,17 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from myapp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("tasks/all/",views.TaskListView.as_view(),name="task-list"),
-    path("tasks/add/",views.TaskCreateView.as_view(),name="task-add"),
-    path("tasks/<int:pk>/",views.TaskDetailView.as_view(),name="task-detail"),
-    path("tasks/<int:pk>/remove/",views.TaskDeleteView.as_view(),name="task-delete"),
-    path("tasks/<int:pk>/change/",views.TaskEditView.as_view(),name="task-edit"),
-    path("signup/",views.SignUpView.as_view(),name="signup"),
-    path("signin/",views.SignInView.as_view(),name="signin"), 
-    path("signout/",views.SignOutView.as_view(),name="signout"),  
 ]
-

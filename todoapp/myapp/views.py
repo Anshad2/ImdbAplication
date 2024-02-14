@@ -10,16 +10,40 @@ from django.contrib.auth.models import User
 
 from django.contrib.auth import authenticate,login,logout
 
+from django.utils import timezone
+
+from django.db.models import Sum
+
+from django.utils.decorators import method_decorator
+
+from django.contrib import messages
+
 # Create your views here.
 
+
+# decorators
+
+def signin_required(fn):
+    def wrapper(request,*args,**kwargs):
+        if not request.user.is_authenticated:
+            messages.error(request,"invalid session")
+            return redirect("signin")
+        else:
+            return fn(request,*args,**kwargs)
+    return wrapper
 # task add view
 # edit and upadte
 
 class TaskForm(forms.ModelForm):
     class Meta:
         model=Task
-        fields="__all__"
-        exclude=("user",)
+        exclude=("created_date","user")
+        widgets={
+            "title":forms.TextInput(attrs={"class":"form-control"}),
+            "description":forms.TextInput(attrs={"class":"form-control"}),
+            "priority":forms.Select(attrs={"class":"form-control form-select"}),
+            "completed":forms.CheckboxInput(attrs={"class":"form-check-input"}),            }
+        
 
 
 
@@ -29,22 +53,28 @@ class RegistartionForm(forms.ModelForm):
     class Meta:
         model=User
         fields=["username","email","password"]
+        widgets={
+            "username":forms.TextInput(attrs={"class":"form-control"}),
+            "email":forms.EmailInput(attrs={"class":"form-control"}),
+            "password":forms.PasswordInput(attrs={"class":"form-control"})
+        }
 
 # login form
         
 class LoginForm(forms.Form):
-    username=forms.CharField()
-    password=forms.CharField()
+    username=forms.CharField(widget=forms.TextInput(attrs={"class":"form-control"}))
+    password=forms.CharField(widget=forms.TextInput(attrs={"class":"form-control"}))
 
 # view for creating task
     # url:localhost:8000/tasks/add/
     # method: get post
-
+@method_decorator(signin_required,name="dispatch")
 class TaskListView(View):
     def get(self,request,*args,**kwargs):
         qs=Task.objects.filter(user=request.user)
         return render(request,"task_list.html",{"data":qs})
     
+@method_decorator(signin_required,name="dispatch")
 class TaskCreateView(View):
     def get(self,request,*args,**kwargs):
         form=TaskForm()
@@ -55,11 +85,14 @@ class TaskCreateView(View):
             # form.save()
             data=form.cleaned_data
             Task.objects.create(**data,user=request.user)
+            messages.success(request,"Task has been addes successfully")
 
             return redirect("task-list")
         else:
+            messages.error(request,"failed to add Task")
             return render(request,"task_add.html",{"form":form})
         
+@method_decorator(signin_required,name="dispatch")
 class TaskDetailView(View):
     def get(self,request,*args,**kwargs):
         id=kwargs.get("pk")
@@ -69,7 +102,7 @@ class TaskDetailView(View):
 
 # task delete view
     # url:localhost:8000/tasks/{id}/remove
-
+@method_decorator(signin_required,name="dispatch")
 class TaskDeleteView(View):
     def get(self,request,*args,**kwargs):
         id=kwargs.get("pk")
@@ -78,7 +111,7 @@ class TaskDeleteView(View):
 
 # task update/edit view
     # url:localhost:8000/tasks/{id}/change/
-
+@method_decorator(signin_required,name="dispatch")
 class TaskEditView(View):
     def get(self,request,*args,**kwargs):
         id=kwargs.get("pk")
@@ -92,8 +125,10 @@ class TaskEditView(View):
         form=TaskForm(request.POST,instance=task_object)
         if form.is_valid():
             form.save()
+            messages.success(request,"Task has been edited successfullu")
             return redirect("task-list")
         else:
+            messages.error(request,"Task edut failed")
             return render(request,"task_edit.html",{"form":form})
         
 
@@ -136,9 +171,8 @@ class SignInView(View):
         return render(request,"login.html",{"form":form})
     
 # signout view
+@method_decorator(signin_required,name="dispatch")
 class SignOutView(View):
     def get(self,request,*args,**kwargs):
         logout(request)
         return redirect("signin")
-
-

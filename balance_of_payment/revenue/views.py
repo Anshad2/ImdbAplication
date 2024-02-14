@@ -14,8 +14,22 @@ from django.utils import timezone
 
 from django.db.models import Sum
 
+from django.utils.decorators import method_decorator
+
+from django.contrib import messages
+
 # Create your views here.
 
+# decorators
+
+def signin_required(fn):
+    def wrapper(request,*args,**kwargs):
+        if not request.user.is_authenticated:
+            messages.error(request,"invalid session")
+            return redirect("signin")
+        else:
+            return fn(request,*args,**kwargs)
+    return wrapper
 
 
 ## trasaction add view
@@ -53,13 +67,14 @@ class RegistrationForm(forms.ModelForm):
 # not using model form beacuse no need to upadte and edit 
         
 class LoginForm(forms.Form):
-    username=forms.CharField()
-    password=forms.CharField()
+    username=forms.CharField(widget=forms.TextInput(attrs={"class":"form-control"}))
+    password=forms.CharField(widget=forms.PasswordInput(attrs={"class":"form-control"}))
 
 
 # # view for creating transaction
 # # url: localhost:8000/transaction/add/
 # method get,post
+@method_decorator(signin_required,name="dispatch")
 class TransactionListView(View):
     def get(self,request,*args,**kwargs):
         # to get difrent track for difrent user
@@ -96,7 +111,8 @@ class TransactionListView(View):
         # print(income_trans)
 
         return render(request,"transaction_list.html",{"data":qs,"type_total":data,"cat_sum":cat_qs})
-
+    
+@method_decorator(signin_required,name="dispatch")
 class TransactionCreateView(View):
 
     def get(self,request,*args,**kwargs):
@@ -111,17 +127,19 @@ class TransactionCreateView(View):
             # form.save()
             data=form.cleaned_data
             Transaction.objects.create(**data,user=request.user)
+            messages.success(request,"Transaction has been added successfully")
 
             return redirect("transaction-list")
         else:
+             messages.error(request,"Failed to add transaction")
              return render(request,"transaction_add.html",{"form":form,}) 
 
 
-    
+
 # #trasaction details
 # url:localhost:8000/transactions/{id}/
 #method:get
-
+@method_decorator(signin_required,name="dispatch")
 class TransactionDetailView(View):
     def get(self,request,*args,**kwargs):
         id=kwargs.get("pk")
@@ -130,7 +148,7 @@ class TransactionDetailView(View):
 
 ##trasaction delete view
 ##url: localhost:8000/transactions/{id}/remove
-    
+@method_decorator(signin_required,name="dispatch")  
 class TransactionDeleteView(View):
     def get(self,request,*args,**kwargs):
         id=kwargs.get("pk")
@@ -139,7 +157,7 @@ class TransactionDeleteView(View):
 
 ## trasaction update/edit view
 # url:localhost:8000/transaction/<>/change/
-    
+@method_decorator(signin_required,name="dispatch")
 class TransactionEditView(View):
     def get(self,request,*args,**kwargs):
         id=kwargs.get("pk")
@@ -153,8 +171,12 @@ class TransactionEditView(View):
         form=TransactionForm(request.POST,instance=transaction_object)
         if form.is_valid():
             form.save()
+            messages.success(request,"Transaction has been Edited successfully")
+
             return redirect("transaction-list")
         else:
+            messages.error(request,"Transaction edit failed")
+
             return render(request,"transaction_edit.html",{"form":form})
 
 
@@ -162,7 +184,7 @@ class TransactionEditView(View):
     
 #signup view
 #url: localhost8000/signup/
-        
+      
 class SignUpView(View):
     def get(self,request,*args,**kwargs):
         form=RegistrationForm()
@@ -185,7 +207,7 @@ class SignUpView(View):
 class SignInView(View):
     def get(self,request,*args,**kwargs):
         form=LoginForm()
-        return render(request,"login.html",{"form":form})
+        return render(request,"signin.html",{"form":form})
     def post(self,request,*args,**kwargs):
         form=LoginForm(request.POST)
         if form.is_valid():
@@ -199,11 +221,11 @@ class SignInView(View):
                 # request.user => anonymus user(user has no session)
                 return redirect("transaction-list")
         print("invalid")
-        return render(request,"login.html",{"form":form})
+        return render(request,"signin.html",{"form":form})
 
 
 # signout
-    
+@method_decorator(signin_required,name="dispatch")    
 class SignOutView(View):
     def get(self,request,*args,**kwargs):
         logout(request)
